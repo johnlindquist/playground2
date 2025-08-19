@@ -1,0 +1,44 @@
+name: Generate Poem
+
+on:
+  schedule:
+    # Run every 15 minutes
+    - cron: '*/15 * * * *'
+  workflow_dispatch: # Allow manual trigger for testing
+
+permissions:
+  contents: write
+
+jobs:
+  generate-poem:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    
+    - name: Generate poem
+      run: |
+        python .github/scripts/generate_poem.py
+    
+    - name: Commit and push poem
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        
+        # Add the new poem file
+        git add poems/*.md
+        
+        # Get the poem title for commit message
+        POEM_FILE=$(ls -t poems/*.md | head -1)
+        POEM_TITLE=$(basename "$POEM_FILE" .md | tr '_' ' ')
+        
+        git commit -m "Add poem: $POEM_TITLE" || echo "No changes to commit"
+        git push || echo "Nothing to push"
