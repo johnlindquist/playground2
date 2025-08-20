@@ -35,7 +35,7 @@ jobs:
           mode: agent
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           # Explicitly grant Claude the tools to write a file and use git commands.
-          allowed_tools: "Write,Bash(git add *),Bash(git commit *),Bash(git push),Bash(git config *)"
+          allowed_tools: "Write,Bash(git add:*),Bash(git commit:*),Bash(git push),Bash(git config:*)"
           # Use 'override_prompt' for direct, automated instructions.
           override_prompt: |
             You are a creative poet bot. Your task is to generate a unique poem and commit it to this repository.
