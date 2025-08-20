@@ -9,6 +9,7 @@ on:
 # Permissions must be set to allow writing back to the repository.
 permissions:
   contents: write
+  id-token: write
 
 jobs:
   generate-poem:
