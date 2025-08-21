@@ -155,7 +155,7 @@ Below is a brief description of each workflow, its inputs, outputs, and common c
 - Inputs: `pr_number` (required), `post_comment` (default: false)
 - Outputs: `reports/pr-<PR>-review.md`
 - Customize: Tighten/relax review scope; change report format; disable `gh` comment.
- - Jump to: [inputs](./diff-aware-pr-reviewer.yml#L30) · [allowed_tools](./diff-aware-pr-reviewer.yml#L63) · [override_prompt](./diff-aware-pr-reviewer.yml#L69)
+ - Jump to: [inputs](.github/workflows/diff-aware-pr-reviewer.yml#L30) · [allowed_tools](.github/workflows/diff-aware-pr-reviewer.yml#L63) · [override_prompt](.github/workflows/diff-aware-pr-reviewer.yml#L69)
 
 ### 2) Design Doc Gatekeeper 🧱
 - File: `.github/workflows/design-doc-gatekeeper.yml`
@@ -163,7 +163,7 @@ Below is a brief description of each workflow, its inputs, outputs, and common c
 - Inputs: `rfc_glob`, `issue_number`, `post_comment`
 - Outputs: `reports/design-doc-review.md`
 - Customize: Template sections; whether to comment on issues.
- - Jump to: [inputs](./design-doc-gatekeeper.yml#L19) · [allowed_tools](./design-doc-gatekeeper.yml#L50) · [override_prompt](./design-doc-gatekeeper.yml#L55)
+ - Jump to: [inputs](.github/workflows/design-doc-gatekeeper.yml#L19) · [allowed_tools](.github/workflows/design-doc-gatekeeper.yml#L50) · [override_prompt](.github/workflows/design-doc-gatekeeper.yml#L55)
 
 ### 3) Pattern Police 🚨
 - File: `.github/workflows/pattern-police.yml`
@@ -171,7 +171,7 @@ Below is a brief description of each workflow, its inputs, outputs, and common c
 - Inputs: `pr_number`, `rules_path`
 - Outputs: `reports/pattern-drift-pr-<PR>.md`
 - Customize: Project rules and examples of banned imports/dependencies.
- - Jump to: [inputs](./pattern-police.yml#L17) · [allowed_tools](./pattern-police.yml#L46) · [override_prompt](./pattern-police.yml#L52)
+ - Jump to: [inputs](.github/workflows/pattern-police.yml#L17) · [allowed_tools](.github/workflows/pattern-police.yml#L46) · [override_prompt](.github/workflows/pattern-police.yml#L52)
 
 ### 4) Commit Message Fixer (Conventional Commits) ✍️
 - File: `.github/workflows/commit-message-fixer.yml`
@@ -179,7 +179,7 @@ Below is a brief description of each workflow, its inputs, outputs, and common c
 - Inputs: `base_branch`, `target_branch`, `open_pr`
 - Outputs: New branch + PR (optional)
 - Customize: Types/scopes, default branches, whether to create a PR.
- - Jump to: [inputs](./commit-message-fixer.yml#L18) · [allowed_tools](./commit-message-fixer.yml#L51) · [override_prompt](./commit-message-fixer.yml#L61)
+ - Jump to: [inputs](.github/workflows/commit-message-fixer.yml#L18) · [allowed_tools](.github/workflows/commit-message-fixer.yml#L51) · [override_prompt](.github/workflows/commit-message-fixer.yml#L61)
 
 ### 5) API Contract Enforcer 📜
 - File: `.github/workflows/api-contract-enforcer.yml`
@@ -187,7 +187,7 @@ Below is a brief description of each workflow, its inputs, outputs, and common c
 - Inputs: `contract_path`, `base_branch`, `generate_tests`
 - Outputs: `reports/api-contract-diff.md`, `tests/generated/`
 - Customize: Spec path, test generation on/off, output dirs.
- - Jump to: [inputs](./api-contract-enforcer.yml#L14) · [allowed_tools](./api-contract-enforcer.yml#L44) · [override_prompt](./api-contract-enforcer.yml#L48)
+ - Jump to: [inputs](.github/workflows/api-contract-enforcer.yml#L14) · [allowed_tools](.github/workflows/api-contract-enforcer.yml#L44) · [override_prompt](.github/workflows/api-contract-enforcer.yml#L48)
 
 ### 6) Flaky Test Hunter‑Killer 🎯
 - File: `.github/workflows/flaky-test-hunter.yml`
@@ -195,7 +195,7 @@ Below is a brief description of each workflow, its inputs, outputs, and common c
 - Inputs: `test_command`, `reruns`, `quarantine_label`
 - Outputs: `reports/flaky-test-log.txt`, `reports/flaky-test-summary.md`, `reports/flaky-quarantine-plan.md`
 - Customize: Test command, reruns, quarantine policy.
- - Jump to: [inputs](./flaky-test-hunter.yml#L14) · [allowed_tools](./flaky-test-hunter.yml#L42) · [override_prompt](./flaky-test-hunter.yml#L48)
+ - Jump to: [inputs](.github/workflows/flaky-test-hunter.yml#L14) · [allowed_tools](.github/workflows/flaky-test-hunter.yml#L42) · [override_prompt](.github/workflows/flaky-test-hunter.yml#L48)
 
 ### 7) Failure Explainer → Patch PR 🧩
 - File: `.github/workflows/failure-explainer-patch.yml`
@@ -203,7 +203,7 @@ Below is a brief description of each workflow, its inputs, outputs, and common c
 - Inputs: `log_path`, `branch_name`, `open_pr`
 - Outputs: `reports/failure-analysis.md`, new branch + PR (optional)
 - Customize: Scope of permitted edits; diff size limits.
- - Jump to: [inputs](./failure-explainer-patch.yml#L14) · [allowed_tools](./failure-explainer-patch.yml#L46) · [override_prompt](./failure-explainer-patch.yml#L55)
+ - Jump to: [inputs](.github/workflows/failure-explainer-patch.yml#L14) · [allowed_tools](.github/workflows/failure-explainer-patch.yml#L46) · [override_prompt](.github/workflows/failure-explainer-patch.yml#L55)
 
 ### 8) Fuzz/Property Testing on Hot Paths 🧪
 - File: `.github/workflows/fuzz-property-testing.yml`
@@ -211,7 +211,7 @@ Below is a brief description of each workflow, its inputs, outputs, and common c
 - Inputs: `target_dirs`, `coverage_path?`
 - Outputs: `tests/property/`, `reports/property-testing-plan.md`
 - Customize: Test framework, coverage signal, invariants.
- - Jump to: [inputs](./fuzz-property-testing.yml#L14) · [allowed_tools](./fuzz-property-testing.yml#L38) · [override_prompt](./fuzz-property-testing.yml#L42)
+ - Jump to: [inputs](.github/workflows/fuzz-property-testing.yml#L14) · [allowed_tools](.github/workflows/fuzz-property-testing.yml#L38) · [override_prompt](.github/workflows/fuzz-property-testing.yml#L42)
 
 ### 9) Cross‑Platform Repro Bot (Playwright/Electron) 🎬
 - File: `.github/workflows/cross-platform-repro.yml`
@@ -219,7 +219,7 @@ Below is a brief description of each workflow, its inputs, outputs, and common c
 - Inputs: `scenario_desc`
 - Outputs: `repro/playwright/`, `reports/repro-instructions.md`
 - Customize: Framework/tool; scenario specificity; install steps.
- - Jump to: [inputs](./cross-platform-repro.yml#L14) · [allowed_tools](./cross-platform-repro.yml#L34) · [override_prompt](./cross-platform-repro.yml#L38)
+ - Jump to: [inputs](.github/workflows/cross-platform-repro.yml#L14) · [allowed_tools](.github/workflows/cross-platform-repro.yml#L34) · [override_prompt](.github/workflows/cross-platform-repro.yml#L38)
 
 ### 10) Performance Regression Sentinel 🚀
 - File: `.github/workflows/performance-regression-sentinel.yml`
@@ -227,7 +227,7 @@ Below is a brief description of each workflow, its inputs, outputs, and common c
 - Inputs: `pr_number`
 - Outputs: `benchmarks/`, `reports/perf-assessment-pr-<PR>.md`
 - Customize: Benchmark tool/framework; file-type filters.
- - Jump to: [inputs](./performance-regression-sentinel.yml#L14) · [allowed_tools](./performance-regression-sentinel.yml#L38) · [override_prompt](./performance-regression-sentinel.yml#L43)
+ - Jump to: [inputs](.github/workflows/performance-regression-sentinel.yml#L14) · [allowed_tools](.github/workflows/performance-regression-sentinel.yml#L38) · [override_prompt](.github/workflows/performance-regression-sentinel.yml#L43)
 
 ### 11) Auto‑triage CVEs with Fix PR 🛡️
 - File: `.github/workflows/cve-triage-fix-pr.yml`
@@ -235,7 +235,7 @@ Below is a brief description of each workflow, its inputs, outputs, and common c
 - Inputs: `package_manager`, `branch_name`
 - Outputs: `reports/deps-cve-summary.md`, branch + PR (optional)
 - Customize: Allowed version bumps; ecosystems; risk notes.
- - Jump to: [inputs](./cve-triage-fix-pr.yml#L14) · [allowed_tools](./cve-triage-fix-pr.yml#L43) · [override_prompt](./cve-triage-fix-pr.yml#L52)
+ - Jump to: [inputs](.github/workflows/cve-triage-fix-pr.yml#L14) · [allowed_tools](.github/workflows/cve-triage-fix-pr.yml#L43) · [override_prompt](.github/workflows/cve-triage-fix-pr.yml#L52)
 
 ### 12) Secret Hygiene Coach 🔐
 - File: `.github/workflows/secret-hygiene-coach.yml`
@@ -243,7 +243,7 @@ Below is a brief description of each workflow, its inputs, outputs, and common c
 - Inputs: `search_globs`
 - Outputs: `reports/secret-hygiene.md`
 - Customize: Patterns and globs; link to org scanners.
- - Jump to: [inputs](./secret-hygiene-coach.yml#L14) · [allowed_tools](./secret-hygiene-coach.yml#L35) · [override_prompt](./secret-hygiene-coach.yml#L40)
+ - Jump to: [inputs](.github/workflows/secret-hygiene-coach.yml#L14) · [allowed_tools](.github/workflows/secret-hygiene-coach.yml#L35) · [override_prompt](.github/workflows/secret-hygiene-coach.yml#L40)
 
 ### 13) Policy‑as‑Code Explainer ⚖️
 - File: `.github/workflows/policy-as-code-explainer.yml`
@@ -251,7 +251,7 @@ Below is a brief description of each workflow, its inputs, outputs, and common c
 - Inputs: `violations_path`
 - Outputs: `reports/policy-explanations.md`
 - Customize: Policy framework and fix strategy options.
- - Jump to: [inputs](./policy-as-code-explainer.yml#L14) · [allowed_tools](./policy-as-code-explainer.yml#L34) · [override_prompt](./policy-as-code-explainer.yml#L37)
+ - Jump to: [inputs](.github/workflows/policy-as-code-explainer.yml#L14) · [allowed_tools](.github/workflows/policy-as-code-explainer.yml#L34) · [override_prompt](.github/workflows/policy-as-code-explainer.yml#L37)
 
 ### 14) Executable Docs Doctor 🩺
 - File: `.github/workflows/executable-docs-doctor.yml`
@@ -259,7 +259,7 @@ Below is a brief description of each workflow, its inputs, outputs, and common c
 - Inputs: `docs_glob`
 - Outputs: `docs/_generated/`, `reports/docs-doctor-summary.md`
 - Customize: Language filters; safe/no-network execution constraints.
- - Jump to: [inputs](./executable-docs-doctor.yml#L14) · [allowed_tools](./executable-docs-doctor.yml#L35) · [override_prompt](./executable-docs-doctor.yml#L39)
+ - Jump to: [inputs](.github/workflows/executable-docs-doctor.yml#L14) · [allowed_tools](.github/workflows/executable-docs-doctor.yml#L35) · [override_prompt](.github/workflows/executable-docs-doctor.yml#L39)
 
 ### 15) Tutorial Freshness Checker 🧭
 - File: `.github/workflows/tutorial-freshness-checker.yml`
@@ -267,7 +267,7 @@ Below is a brief description of each workflow, its inputs, outputs, and common c
 - Inputs: `tutorials_glob`
 - Outputs: `reports/tutorial-freshness.md`
 - Customize: Version maps; issue templates.
- - Jump to: [inputs](./tutorial-freshness-checker.yml#L14) · [allowed_tools](./tutorial-freshness-checker.yml#L35) · [override_prompt](./tutorial-freshness-checker.yml#L38)
+ - Jump to: [inputs](.github/workflows/tutorial-freshness-checker.yml#L14) · [allowed_tools](.github/workflows/tutorial-freshness-checker.yml#L35) · [override_prompt](.github/workflows/tutorial-freshness-checker.yml#L38)
 
 ### 16) Changelog & Release Notes Author 📝
 - File: `.github/workflows/changelog-release-notes.yml`
@@ -275,7 +275,7 @@ Below is a brief description of each workflow, its inputs, outputs, and common c
 - Inputs: `since_ref`, `until_ref?`
 - Outputs: `reports/release-notes.md`, `CHANGELOG.md`
 - Customize: Sections, formatting, link styles.
- - Jump to: [inputs](./changelog-release-notes.yml#L14) · [allowed_tools](./changelog-release-notes.yml#L39) · [override_prompt](./changelog-release-notes.yml#L43)
+ - Jump to: [inputs](.github/workflows/changelog-release-notes.yml#L14) · [allowed_tools](.github/workflows/changelog-release-notes.yml#L39) · [override_prompt](.github/workflows/changelog-release-notes.yml#L43)
 
 ### 17) Contributor Concierge 🤝
 - File: `.github/workflows/contributor-concierge.yml`
@@ -283,7 +283,7 @@ Below is a brief description of each workflow, its inputs, outputs, and common c
 - Inputs: `pr_number`, `post_comment`
 - Outputs: PR comment (optional)
 - Customize: Tone, house style, setup checklist.
- - Jump to: [inputs](./contributor-concierge.yml#L14) · [allowed_tools](./contributor-concierge.yml#L41) · [override_prompt](./contributor-concierge.yml#L45)
+ - Jump to: [inputs](.github/workflows/contributor-concierge.yml#L14) · [allowed_tools](.github/workflows/contributor-concierge.yml#L41) · [override_prompt](.github/workflows/contributor-concierge.yml#L45)
 
 ### 18) Issue De‑duplicator & Triager 🔎
 - File: `.github/workflows/issue-de-duplicator.yml`
@@ -291,7 +291,7 @@ Below is a brief description of each workflow, its inputs, outputs, and common c
 - Inputs: `issue_number`, `post_comment`
 - Outputs: `reports/issue-<ISSUE>-dedupe.md`, optional comment
 - Customize: Search filters, number of candidates.
- - Jump to: [inputs](./issue-de-duplicator.yml#L14) · [allowed_tools](./issue-de-duplicator.yml#L40) · [override_prompt](./issue-de-duplicator.yml#L45)
+ - Jump to: [inputs](.github/workflows/issue-de-duplicator.yml#L14) · [allowed_tools](.github/workflows/issue-de-duplicator.yml#L40) · [override_prompt](.github/workflows/issue-de-duplicator.yml#L45)
 
 ### 19) Roadmap Synchronizer 🗺️
 - File: `.github/workflows/roadmap-synchronizer.yml`
@@ -299,7 +299,7 @@ Below is a brief description of each workflow, its inputs, outputs, and common c
 - Inputs: `milestone_title?`
 - Outputs: `reports/roadmap-sync.md`
 - Customize: Label conventions; mutation vs report-only.
- - Jump to: [inputs](./roadmap-synchronizer.yml#L14) · [allowed_tools](./roadmap-synchronizer.yml#L37) · [override_prompt](./roadmap-synchronizer.yml#L41)
+ - Jump to: [inputs](.github/workflows/roadmap-synchronizer.yml#L14) · [allowed_tools](.github/workflows/roadmap-synchronizer.yml#L37) · [override_prompt](.github/workflows/roadmap-synchronizer.yml#L41)
 
 ### 20) Spec → Test Plan Synthesizer ✅
 - File: `.github/workflows/spec-to-test-plan.yml`
@@ -307,7 +307,7 @@ Below is a brief description of each workflow, its inputs, outputs, and common c
 - Inputs: `spec_path`, `create_stubs`
 - Outputs: `tests/plans/plan.feature`, `tests/stubs/`
 - Customize: Test framework and language.
- - Jump to: [inputs](./spec-to-test-plan.yml#L14) · [allowed_tools](./spec-to-test-plan.yml#L37) · [override_prompt](./spec-to-test-plan.yml#L41)
+ - Jump to: [inputs](.github/workflows/spec-to-test-plan.yml#L14) · [allowed_tools](.github/workflows/spec-to-test-plan.yml#L37) · [override_prompt](.github/workflows/spec-to-test-plan.yml#L41)
 
 ### 21) Cache Strategy Optimizer 🧠
 - File: `.github/workflows/cache-strategy-optimizer.yml`
@@ -315,7 +315,7 @@ Below is a brief description of each workflow, its inputs, outputs, and common c
 - Inputs: `workflow_glob`
 - Outputs: `reports/cache-optimization.md`
 - Customize: Key composition; before/after timing hypotheses.
- - Jump to: [inputs](./cache-strategy-optimizer.yml#L14) · [allowed_tools](./cache-strategy-optimizer.yml#L35) · [override_prompt](./cache-strategy-optimizer.yml#L38)
+ - Jump to: [inputs](.github/workflows/cache-strategy-optimizer.yml#L14) · [allowed_tools](.github/workflows/cache-strategy-optimizer.yml#L35) · [override_prompt](.github/workflows/cache-strategy-optimizer.yml#L38)
 
 ### 22) Selective CI (Monorepo Brain) 🧰
 - File: `.github/workflows/selective-ci-monorepo.yml`
@@ -323,7 +323,7 @@ Below is a brief description of each workflow, its inputs, outputs, and common c
 - Inputs: `base_ref`
 - Outputs: `scripts/affected.sh`, `reports/selective-ci-audit.md`
 - Customize: Monorepo tooling (Nx/Turbo/Bazel) integration.
- - Jump to: [inputs](./selective-ci-monorepo.yml#L14) · [allowed_tools](./selective-ci-monorepo.yml#L37) · [override_prompt](./selective-ci-monorepo.yml#L42)
+ - Jump to: [inputs](.github/workflows/selective-ci-monorepo.yml#L14) · [allowed_tools](.github/workflows/selective-ci-monorepo.yml#L37) · [override_prompt](.github/workflows/selective-ci-monorepo.yml#L42)
 
 ### 23) Infra Change Simulator 🏗️
 - File: `.github/workflows/infra-change-simulator.yml`
@@ -331,7 +331,7 @@ Below is a brief description of each workflow, its inputs, outputs, and common c
 - Inputs: `iac_dir`
 - Outputs: `reports/infra-plan.md`
 - Customize: Tooling (Terraform/CDK/Pulumi); cloud specifics.
- - Jump to: [inputs](./infra-change-simulator.yml#L14) · [allowed_tools](./infra-change-simulator.yml#L35) · [override_prompt](./infra-change-simulator.yml#L38)
+ - Jump to: [inputs](.github/workflows/infra-change-simulator.yml#L14) · [allowed_tools](.github/workflows/infra-change-simulator.yml#L35) · [override_prompt](.github/workflows/infra-change-simulator.yml#L38)
 
 ### 24) Schema Migration Dry‑Runner 🗄️
 - File: `.github/workflows/schema-migration-dry-runner.yml`
@@ -339,7 +339,7 @@ Below is a brief description of each workflow, its inputs, outputs, and common c
 - Inputs: `migrations_dir`
 - Outputs: `scripts/db-dry-run.sh`, `reports/migration-dry-run.md`
 - Customize: DB type, container runtime, compose vs script.
- - Jump to: [inputs](./schema-migration-dry-runner.yml#L14) · [allowed_tools](./schema-migration-dry-runner.yml#L35) · [override_prompt](./schema-migration-dry-runner.yml#L39)
+ - Jump to: [inputs](.github/workflows/schema-migration-dry-runner.yml#L14) · [allowed_tools](.github/workflows/schema-migration-dry-runner.yml#L35) · [override_prompt](.github/workflows/schema-migration-dry-runner.yml#L39)
 
 ### 25) Canary Bot with Rollback Plan 🐤
 - File: `.github/workflows/canary-rollback-bot.yml`
@@ -347,7 +347,7 @@ Below is a brief description of each workflow, its inputs, outputs, and common c
 - Inputs: `service_name`
 - Outputs: `reports/<service>-rollback-plan.md`, branch + PR
 - Customize: Dashboards/alerts links; SLOs; PR label conventions.
- - Jump to: [inputs](./canary-rollback-bot.yml#L14) · [allowed_tools](./canary-rollback-bot.yml#L39) · [override_prompt](./canary-rollback-bot.yml#L47)
+ - Jump to: [inputs](.github/workflows/canary-rollback-bot.yml#L14) · [allowed_tools](.github/workflows/canary-rollback-bot.yml#L39) · [override_prompt](.github/workflows/canary-rollback-bot.yml#L47)
 
 ### 26) Design Pattern Propagator 🧩
 - File: `.github/workflows/design-pattern-propagator.yml`
@@ -355,7 +355,7 @@ Below is a brief description of each workflow, its inputs, outputs, and common c
 - Inputs: `pattern_doc`
 - Outputs: `tools/codemods/`, `reports/pattern-propagation-plan.md`
 - Customize: Languages; repo structures; batching.
- - Jump to: [inputs](./design-pattern-propagator.yml#L14) · [allowed_tools](./design-pattern-propagator.yml#L34) · [override_prompt](./design-pattern-propagator.yml#L38)
+ - Jump to: [inputs](.github/workflows/design-pattern-propagator.yml#L14) · [allowed_tools](.github/workflows/design-pattern-propagator.yml#L34) · [override_prompt](.github/workflows/design-pattern-propagator.yml#L38)
 
 ### 27) License & Header Normalizer 📄
 - File: `.github/workflows/license-header-normalizer.yml`
@@ -363,7 +363,7 @@ Below is a brief description of each workflow, its inputs, outputs, and common c
 - Inputs: `header_text`, `file_glob`, `create_branch`
 - Outputs: `reports/header-audit.md`, branch + PR (optional)
 - Customize: Headers; churn avoidance; file types.
- - Jump to: [inputs](./license-header-normalizer.yml#L14) · [allowed_tools](./license-header-normalizer.yml#L45) · [override_prompt](./license-header-normalizer.yml#L54)
+ - Jump to: [inputs](.github/workflows/license-header-normalizer.yml#L14) · [allowed_tools](.github/workflows/license-header-normalizer.yml#L45) · [override_prompt](.github/workflows/license-header-normalizer.yml#L54)
 
 ### 28) Dependency Baseline Aligner 📦
 - File: `.github/workflows/dependency-baseline-aligner.yml`
@@ -371,7 +371,7 @@ Below is a brief description of each workflow, its inputs, outputs, and common c
 - Inputs: `baseline_doc`
 - Outputs: `reports/dependency-baseline-plan.md`
 - Customize: Ecosystem rules; batching; CI gates.
- - Jump to: [inputs](./dependency-baseline-aligner.yml#L14) · [allowed_tools](./dependency-baseline-aligner.yml#L34) · [override_prompt](./dependency-baseline-aligner.yml#L37)
+ - Jump to: [inputs](.github/workflows/dependency-baseline-aligner.yml#L14) · [allowed_tools](.github/workflows/dependency-baseline-aligner.yml#L34) · [override_prompt](.github/workflows/dependency-baseline-aligner.yml#L37)
 
 ### 29) Bug → Dataset Creator 🧪
 - File: `.github/workflows/bug-to-dataset.yml`
@@ -379,7 +379,7 @@ Below is a brief description of each workflow, its inputs, outputs, and common c
 - Inputs: `issue_number`
 - Outputs: `fixtures/`, `tests/failing/`
 - Customize: Test harness; anonymization; repro script.
- - Jump to: [inputs](./bug-to-dataset.yml#L14) · [allowed_tools](./bug-to-dataset.yml#L36) · [override_prompt](./bug-to-dataset.yml#L41)
+ - Jump to: [inputs](.github/workflows/bug-to-dataset.yml#L14) · [allowed_tools](.github/workflows/bug-to-dataset.yml#L36) · [override_prompt](.github/workflows/bug-to-dataset.yml#L41)
 
 ### 30) Log‑to‑Hypothesis Bot 🕵️
 - File: `.github/workflows/log-to-hypothesis.yml`
@@ -387,7 +387,7 @@ Below is a brief description of each workflow, its inputs, outputs, and common c
 - Inputs: `logs_path`
 - Outputs: `reports/log-hypotheses.md`
 - Customize: Signal formats; runbook links; mitigation vs investigation.
- - Jump to: [inputs](./log-to-hypothesis.yml#L14) · [allowed_tools](./log-to-hypothesis.yml#L34) · [override_prompt](./log-to-hypothesis.yml#L37)
+ - Jump to: [inputs](.github/workflows/log-to-hypothesis.yml#L14) · [allowed_tools](.github/workflows/log-to-hypothesis.yml#L34) · [override_prompt](.github/workflows/log-to-hypothesis.yml#L37)
 
 ---
 
