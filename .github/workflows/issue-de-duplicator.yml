@@ -1,0 +1,54 @@
+name: Claude - Issue De-duplicator & Triager
+
+# ABOUT
+# - Suggests likely duplicate issues and known workarounds; optional comment.
+# - Manual only.
+#
+# CUSTOMIZATION
+# - Adjust the number of candidates in the prompt.
+# - Change the search query to include labels/milestones as filters.
+# - Remove commenting if you prefer manual handoff.
+
+on:
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: Issue to triage for duplicates
+        required: true
+      post_comment:
+        description: Post duplicate suggestions as a comment (true/false)
+        default: "true"
+
+permissions:
+  contents: read
+  issues: write
+  id-token: write
+
+jobs:
+  issue-dedupe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Suggest likely duplicates and workarounds
+        uses: anthropics/claude-code-action@beta
+        env:
+          GH_TOKEN: ${{ github.token }}
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          mode: agent
+          allowed_tools: |
+            Write,
+            Bash(gh issue view:*),
+            Bash(gh issue list:*),
+            Bash(gh issue comment:*)
+          override_prompt: |
+            You are an issue triager.
+
+            Task:
+            - Read issue #${{ inputs.issue_number }} and search for similar issues using `gh issue list --search`.
+            - Create a report at reports/issue-${{ inputs.issue_number }}-dedupe.md listing 3–10 likely duplicates with links and short rationales.
+            - If ${{ inputs.post_comment }} == "true", post a comment with the top 3 candidates and a polite note.
+
+            Safety:
+            - Read-only otherwise. Only write the report and optional comment.

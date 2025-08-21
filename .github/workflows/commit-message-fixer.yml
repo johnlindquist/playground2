@@ -1,0 +1,76 @@
+name: Claude - Commit Message Fixer (Conventional Commits)
+
+# ABOUT
+# - Creates a new branch with reworded commit messages (Conventional Commits) without altering original branch.
+# - Manual run. Optionally opens a PR.
+#
+# IMPORTANT
+# - Never force-push; this keeps contributor branches untouched.
+# - Configure scopes and types to fit your conventions in the prompt.
+#
+# CUSTOMIZATION
+# - Set base_branch/target_branch defaults to your flow.
+# - Set open_pr default to false if you prefer manual review.
+# - Trim allowed_tools (remove gh pr create) if PR creation is undesired.
+
+on:
+  workflow_dispatch:
+    inputs:
+      base_branch:
+        description: Base branch to branch from (e.g., main)
+        default: main
+        required: true
+      target_branch:
+        description: Branch with commits to reword (e.g., feature/x)
+        required: true
+      open_pr:
+        description: Open a PR with reworded commits (true/false)
+        default: "true"
+        required: true
+
+permissions:
+  contents: write
+  pull-requests: write
+  id-token: write
+
+jobs:
+  conventional-commits:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Reword commit messages into Conventional Commits
+        uses: anthropics/claude-code-action@beta
+        env:
+          GH_TOKEN: ${{ github.token }}
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          mode: agent
+          allowed_tools: |
+            Bash(git fetch:*),
+            Bash(git checkout:*),
+            Bash(git switch:*),
+            Bash(git rebase:*),
+            Bash(git log:*),
+            Bash(git commit:*),
+            Bash(git push:*),
+            Bash(git config:*),
+            Bash(gh pr create:*)
+          override_prompt: |
+            You are a git commit message editor.
+
+            Task:
+            - Create a new branch from "${{ inputs.target_branch }}" named "conventional/${{ inputs.target_branch }}".
+            - Reword commit messages to follow Conventional Commits format (feat, fix, docs, refactor, chore, test, build, ci), with sensible scopes and short imperative subject lines.
+            - Do NOT change code. Only reword commit messages via interactive rebase if needed.
+            - Configure git user as:
+              - `git config user.name "github-actions[bot]"`
+              - `git config user.email "github-actions[bot]@users.noreply.github.com"`
+            - Force-push is NOT allowed. Create the new branch and push normally.
+            - If ${{ inputs.open_pr }} == "true", open a PR from the new branch to "${{ inputs.base_branch }}" with a summary of changes to messages.
+
+            Safety:
+            - Never rewrite or push to the original branch.
+            - If rebase conflicts arise, stop and write instructions to resolve in the PR body.

@@ -1,0 +1,50 @@
+name: Claude - Spec → Test Plan Synthesizer
+
+# ABOUT
+# - Turns a spec doc into Gherkin scenarios and optional starter test stubs.
+# - Manual only; writes to tests/plans/ and tests/stubs/.
+#
+# CUSTOMIZATION
+# - Change output language/framework for test stubs (Jest, PyTest, Go testing) via the prompt.
+# - Disable stubs by default if you want plans only.
+# - Add links to your test style guide in the prompt.
+
+on:
+  workflow_dispatch:
+    inputs:
+      spec_path:
+        description: Path to spec document
+        required: true
+      create_stubs:
+        description: Create starter test stubs (true/false)
+        default: "true"
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  test-plan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generate Gherkin scenarios and test stubs
+        uses: anthropics/claude-code-action@beta
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          mode: agent
+          allowed_tools: |
+            Write,
+            Bash(mkdir -p tests/plans),
+            Bash(mkdir -p tests/stubs)
+          override_prompt: |
+            You are a test planner.
+
+            Task:
+            - Read the spec at "${{ inputs.spec_path }}".
+            - Create Gherkin-style scenarios and save to tests/plans/plan.feature.
+            - If ${{ inputs.create_stubs }} == "true", create minimal test stubs under tests/stubs/ aligned to the scenarios.
+
+            Safety:
+            - Only add files under tests/plans and tests/stubs.

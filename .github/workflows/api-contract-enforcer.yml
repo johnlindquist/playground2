@@ -1,0 +1,58 @@
+name: Claude - API Contract Enforcer
+
+# ABOUT
+# - Compares API spec changes vs a base branch and flags potential breaking changes.
+# - Optional: scaffolds placeholder contract tests in tests/generated/.
+#
+# CUSTOMIZATION
+# - Point contract_path to openapi.yaml or proto/ directory.
+# - Set generate_tests to false to skip scaffolds.
+# - Tighten allowed_tools to read-only if you do not want tests written.
+
+on:
+  workflow_dispatch:
+    inputs:
+      contract_path:
+        description: Path to OpenAPI/Proto spec (e.g., openapi.yaml)
+        required: true
+      base_branch:
+        description: Base branch for comparisons
+        default: main
+        required: true
+      generate_tests:
+        description: Generate placeholder contract tests (true/false)
+        default: "true"
+        required: true
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  api-enforce:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Contract change analysis and test scaffolding
+        uses: anthropics/claude-code-action@beta
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          mode: agent
+          allowed_tools: |
+            Write,
+            Bash(git diff:*),
+            Bash(mkdir -p tests/generated)
+          override_prompt: |
+            You are an API contract enforcer.
+
+            Task:
+            - Compare the file "${{ inputs.contract_path }}" against the same file on branch "${{ inputs.base_branch }}" using `git diff`.
+            - Identify any breaking changes: removed endpoints, narrowed parameter types, removed fields, incompatible schema changes.
+            - Write a report to reports/api-contract-diff.md describing potential breaking changes and recommended migration steps.
+            - If ${{ inputs.generate_tests }} == "true", generate placeholder contract tests under tests/generated/ that assert current documented behavior based on the spec, using a language/framework idiomatic for the repo if evident; otherwise produce framework-agnostic pseudocode tests.
+
+            Safety:
+            - Only add files under tests/generated/ and reports/. Do not modify existing code.

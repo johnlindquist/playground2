@@ -1,0 +1,46 @@
+name: Claude - Policy-as-Code Explainer
+
+# ABOUT
+# - Reads policy violation output (e.g., Conftest/OPA) and drafts explanations with minimal diffs to satisfy policy.
+# - Manual only; produces reports/policy-explanations.md.
+#
+# CUSTOMIZATION
+# - Tailor the prompt to your policy framework/tooling.
+# - Ask for multiple fix options with pros/cons.
+# - For large repos, add pointers to relevant policy files for quicker navigation.
+
+on:
+  workflow_dispatch:
+    inputs:
+      violations_path:
+        description: Path to policy check output (e.g., conftest.json)
+        required: true
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  policy-explain:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Explain policy violations with patch suggestions
+        uses: anthropics/claude-code-action@beta
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          mode: agent
+          allowed_tools: |
+            Write,
+            Bash(mkdir -p reports)
+          override_prompt: |
+            You are a policy-as-code explainer.
+
+            Task:
+            - Read the policy violations from "${{ inputs.violations_path }}" (JSON or text).
+            - Produce reports/policy-explanations.md explaining each violation in plain language and attach minimal patch suggestions (unified diff in fenced blocks) that would satisfy the policy.
+            - Include rationale linking policy to patch.
+
+            Safety:
+            - Do not modify code. Only write the report.

@@ -1,0 +1,52 @@
+name: Claude - Performance Regression Sentinel
+
+# ABOUT
+# - Reviews a PR diff for potential performance pitfalls and proposes benchmark harnesses.
+# - Manual only; writes to benchmarks/ and reports/.
+#
+# CUSTOMIZATION
+# - Add your preferred benchmarking tool/framework in the prompt.
+# - Limit which file types to consider by changing the prompt instructions.
+# - Remove file creation if you only want a report.
+
+on:
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: PR number to assess
+        required: true
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  perf-sentinel:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Analyze perf risks and propose benchmarks
+        uses: anthropics/claude-code-action@beta
+        env:
+          GH_TOKEN: ${{ github.token }}
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          mode: agent
+          allowed_tools: |
+            Write,
+            Bash(gh pr diff:*),
+            Bash(mkdir -p benchmarks),
+            Bash(mkdir -p reports)
+          override_prompt: |
+            You are a performance reviewer.
+
+            Task:
+            - Inspect PR #${{ inputs.pr_number }} diff and identify potential hotspots.
+            - Propose minimal benchmark harnesses under benchmarks/ to measure the changed code paths.
+            - Write reports/perf-assessment-pr-${{ inputs.pr_number }}.md including bench ideas and potential micro-optimizations.
+
+            Safety:
+            - Only add files under benchmarks/ and reports/. Do not change existing code.

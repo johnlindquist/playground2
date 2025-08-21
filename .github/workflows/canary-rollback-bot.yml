@@ -1,0 +1,56 @@
+name: Claude - Canary Bot with Rollback Plan
+
+# ABOUT
+# - Prepares rollback playbook docs and opens a PR to add them to the repo.
+# - Manual only; documentation changes only.
+#
+# CUSTOMIZATION
+# - Align service_name to your naming conventions.
+# - Add links to dashboards/alerts and SLOs in the prompt.
+# - Remove PR creation if you want to approve changes locally first.
+
+on:
+  workflow_dispatch:
+    inputs:
+      service_name:
+        description: Service to monitor
+        required: true
+
+permissions:
+  contents: write
+  pull-requests: write
+  id-token: write
+
+jobs:
+  canary-rollback:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Draft rollback plan and PR skeleton
+        uses: anthropics/claude-code-action@beta
+        env:
+          GH_TOKEN: ${{ github.token }}
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          mode: agent
+          allowed_tools: |
+            Write,
+            Bash(git checkout -b:*),
+            Bash(git add:*),
+            Bash(git commit:*),
+            Bash(git push:*),
+            Bash(gh pr create:*),
+            Bash(mkdir -p reports)
+          override_prompt: |
+            You are a canary rollback assistant.
+
+            Task:
+            - Draft an incident/rollback playbook for service "${{ inputs.service_name }}" at reports/${{ inputs.service_name }}-rollback-plan.md.
+            - Create a branch "rollback/${{ inputs.service_name }}-plan" that adds the playbook to docs/ or ops/.
+            - Open a PR with a summary checklist and next steps.
+
+            Safety:
+            - Only add documentation. Do not change code or config.

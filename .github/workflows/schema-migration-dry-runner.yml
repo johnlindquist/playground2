@@ -1,0 +1,47 @@
+name: Claude - Schema Migration Dry-Runner
+
+# ABOUT
+# - Generates a script to spin up an ephemeral DB locally and run migrations up/down; provides a dry-run report.
+# - Manual only; does not run the script itself.
+#
+# CUSTOMIZATION
+# - Set migrations_dir to match your migrations system.
+# - Tweak script to your DB (Postgres/MySQL/SQLite) and container runtime.
+# - If you prefer a Docker Compose file, ask the prompt to generate one instead.
+
+on:
+  workflow_dispatch:
+    inputs:
+      migrations_dir:
+        description: Path to DB migrations
+        default: db/migrations
+        required: true
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  migration-dry-run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Provide dry-run scripts and guidance
+        uses: anthropics/claude-code-action@beta
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          mode: agent
+          allowed_tools: |
+            Write,
+            Bash(mkdir -p scripts),
+            Bash(mkdir -p reports)
+          override_prompt: |
+            You are a database migration assistant.
+
+            Task:
+            - Create a script at scripts/db-dry-run.sh that spins up a local ephemeral DB (e.g., Docker Postgres), loads synthetic data, and runs migrations up/down from "${{ inputs.migrations_dir }}". Keep it generic and well-documented.
+            - Create reports/migration-dry-run.md explaining timings, potential locks, and rollback plans (reasoned, not executed).
+
+            Safety:
+            - Do not run the script now. Only generate it and the report.

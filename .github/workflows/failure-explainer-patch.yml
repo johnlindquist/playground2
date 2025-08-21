@@ -1,0 +1,69 @@
+name: Claude - Failure Explainer → Patch PR
+
+# ABOUT
+# - Reads failing logs, writes an analysis, proposes a minimal fix on a new branch, and optionally opens a PR.
+# - Manual only; you review the PR like any other change.
+#
+# CUSTOMIZATION
+# - Tweak allowed_tools to forbid code edits if you only want analysis.
+# - Adjust override_prompt to set maximum diff size or file types allowed.
+# - Set open_pr default to false if you want to inspect changes first.
+
+on:
+  workflow_dispatch:
+    inputs:
+      log_path:
+        description: Path to failing job/test logs
+        required: true
+      branch_name:
+        description: Create a branch for the fix (e.g., fix/failing-test)
+        required: true
+      open_pr:
+        description: Open a PR with the proposed patch (true/false)
+        default: "true"
+        required: true
+
+permissions:
+  contents: write
+  pull-requests: write
+  id-token: write
+
+jobs:
+  failure-explainer:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Analyze logs and propose fix
+        uses: anthropics/claude-code-action@beta
+        env:
+          GH_TOKEN: ${{ github.token }}
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          mode: agent
+          allowed_tools: |
+            Write,
+            Bash(git config:*),
+            Bash(git checkout -b:*),
+            Bash(git add:*),
+            Bash(git commit:*),
+            Bash(git push:*),
+            Bash(gh pr create:*),
+            Bash(mkdir -p reports)
+          override_prompt: |
+            You are a failure analysis assistant.
+
+            Task:
+            - Read the logs at "${{ inputs.log_path }}".
+            - Write an explanation and root-cause hypothesis to reports/failure-analysis.md with targeted steps to reproduce locally.
+            - Create a minimal, safe code change to address the issue. Keep surface area small.
+            - Create a new branch "${{ inputs.branch_name }}" for the change. Configure git user for commits:
+              - `git config user.name "github-actions[bot]"`
+              - `git config user.email "github-actions[bot]@users.noreply.github.com"`
+            - Commit only necessary files.
+            - If ${{ inputs.open_pr }} == "true", open a PR with the analysis as the description.
+
+            Safety:
+            - Keep changes minimal. If unsure, add a TODO and prefer a smaller patch.

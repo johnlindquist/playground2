@@ -1,0 +1,47 @@
+name: Claude - Design Pattern Propagator
+
+# ABOUT
+# - Reads an approved pattern doc, drafts codemod scripts and a propagation plan.
+# - Manual only; writes to tools/codemods and reports/.
+#
+# CUSTOMIZATION
+# - Provide your target languages and codebase structure in the prompt for accurate codemods.
+# - If you want org-wide execution, this file should live in a template repo; do not auto-run across repos.
+# - Keep codemods conservative; prefer small PRs.
+
+on:
+  workflow_dispatch:
+    inputs:
+      pattern_doc:
+        description: Approved pattern doc path
+        required: true
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  pattern-propagate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generate codemod plan and PR templates
+        uses: anthropics/claude-code-action@beta
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          mode: agent
+          allowed_tools: |
+            Write,
+            Bash(mkdir -p reports),
+            Bash(mkdir -p tools/codemods)
+          override_prompt: |
+            You are a cross-repo pattern propagator.
+
+            Task:
+            - Read the pattern document at "${{ inputs.pattern_doc }}".
+            - Generate a codemod plan and example codemod scripts under tools/codemods/.
+            - Write a report at reports/pattern-propagation-plan.md with guidance to open small, targeted PRs across repos.
+
+            Safety:
+            - Only add files under tools/codemods and reports/.

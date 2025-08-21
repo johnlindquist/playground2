@@ -1,0 +1,47 @@
+name: Claude - Tutorial Freshness Checker
+
+# ABOUT
+# - Reviews tutorials for likely staleness and writes a prioritized update plan.
+# - Manual only.
+#
+# CUSTOMIZATION
+# - Change tutorials_glob to your docs structure.
+# - Add a mapping of tool versions to check against in the prompt.
+# - Ask for issue titles/bodies you can paste into your tracker.
+
+on:
+  workflow_dispatch:
+    inputs:
+      tutorials_glob:
+        description: Tutorial docs glob
+        default: "docs/tutorials/**/*.md"
+        required: true
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  tutorial-freshness:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Assess tutorial freshness and file issues list
+        uses: anthropics/claude-code-action@beta
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          mode: agent
+          allowed_tools: |
+            Write,
+            Bash(mkdir -p reports)
+          override_prompt: |
+            You are a tutorial freshness checker.
+
+            Task:
+            - Analyze tutorials in "${{ inputs.tutorials_glob }}" for likely staleness (outdated commands, versions, APIs).
+            - Produce reports/tutorial-freshness.md listing docs needing updates and suggested fixes.
+            - Include an issue creation checklist (manual) for maintainers.
+
+            Safety:
+            - Read-only analysis. Only write the report.

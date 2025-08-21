@@ -1,0 +1,49 @@
+name: Claude - Executable Docs Doctor
+
+# ABOUT
+# - Parses docs for code blocks, reasons about expected output, and writes generated outputs under docs/_generated/.
+# - Manual only; no network calls.
+#
+# CUSTOMIZATION
+# - Point docs_glob to specific sections of your docs.
+# - Tighten rules to only operate on certain languages (bash, ts, py) via prompt edits.
+# - If you want actual execution, explicitly extend allowed_tools to run commands (not recommended by default).
+
+on:
+  workflow_dispatch:
+    inputs:
+      docs_glob:
+        description: Docs to scan for code blocks
+        default: "docs/**/*.md"
+        required: true
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  docs-doctor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Extract code blocks and verify outputs (safe mode)
+        uses: anthropics/claude-code-action@beta
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          mode: agent
+          allowed_tools: |
+            Write,
+            Bash(mkdir -p docs/_generated),
+            Bash(mkdir -p reports)
+          override_prompt: |
+            You are a docs correctness assistant.
+
+            Task:
+            - Parse markdown files matching "${{ inputs.docs_glob }}" and extract shell/code blocks.
+            - In safe, offline mode, reason about expected outputs and identify steps that are likely to fail.
+            - Write refreshed outputs into docs/_generated/ alongside an index mapping doc -> blocks.
+            - Produce a summary report at reports/docs-doctor-summary.md with suggested fixes.
+
+            Safety:
+            - Do NOT run networked commands. Only generate outputs by reasoning, marking any assumptions.

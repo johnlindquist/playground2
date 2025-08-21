@@ -1,0 +1,69 @@
+name: Claude - Pattern Police
+
+# ABOUT
+# - Checks a PR diff for architecture/layering drift using a project rules file (optional).
+# - Manual run with pr_number input; writes a report under reports/.
+#
+# CUSTOMIZATION
+# - Edit rules_path default to your own pattern index.
+# - Extend override_prompt with examples of forbidden imports or dependency directions.
+# - Limit or expand allowed_tools as needed (e.g., remove ripgrep).
+#
+# SAFETY
+# - Read-only other than a report file. No code changes.
+
+on:
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: PR number to analyze for architecture drift
+        required: true
+      rules_path:
+        description: Path to pattern index/rules (e.g., docs/pattern-index.md)
+        required: false
+        default: "docs/pattern-index.md"
+
+permissions:
+  contents: read
+  pull-requests: read
+  id-token: write
+
+jobs:
+  pattern-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect architecture drift
+        uses: anthropics/claude-code-action@beta
+        env:
+          GH_TOKEN: ${{ github.token }}
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          mode: agent
+          allowed_tools: |
+            Write,
+            Bash(gh pr diff:*),
+            Bash(mkdir -p reports),
+            Bash(rg:*),
+            Bash(grep:*)
+          override_prompt: |
+            You are an architecture pattern checker.
+
+            Inputs:
+            - Pull request #: ${{ inputs.pr_number }}
+            - Rules file: "${{ inputs.rules_path }}" (if present)
+
+            Steps:
+            1) Read the rules file if it exists and summarize enforced patterns (layering, dependency boundaries, naming, etc.).
+            2) Get the PR diff and look for violations:
+               - Example: UI importing data layer directly, forbidden dependency directions, banned imports.
+            3) Write a report to reports/pattern-drift-pr-${{ inputs.pr_number }}.md containing:
+               - Short summary of rules
+               - Concrete findings with file paths and suggested fixes
+               - Suggested minimal patch snippets (unified diff in fenced blocks) when applicable
+
+            Safety:
+            - Do not modify any source files. Only write the report under reports/.

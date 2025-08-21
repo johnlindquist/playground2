@@ -1,0 +1,46 @@
+name: Claude - Log-to-Hypothesis Bot
+
+# ABOUT
+# - Reads production log/metrics snippets and generates concrete hypotheses and targeted checks.
+# - Manual only; writes a concise incident analysis report.
+#
+# CUSTOMIZATION
+# - Define your logging/metrics formats and key signals in the prompt.
+# - Ask for immediate mitigations vs. deeper investigations as separate lists.
+# - Include pointers to runbooks/dashboards and on-call escalation paths if appropriate.
+
+on:
+  workflow_dispatch:
+    inputs:
+      logs_path:
+        description: Path to production logs/metrics snippet
+        required: true
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  log-hypotheses:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generate hypotheses and targeted checks
+        uses: anthropics/claude-code-action@beta
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          mode: agent
+          allowed_tools: |
+            Write,
+            Bash(mkdir -p reports)
+          override_prompt: |
+            You are an incident analysis assistant.
+
+            Task:
+            - Read logs/metrics from "${{ inputs.logs_path }}".
+            - Generate concrete hypotheses and targeted checks, writing to reports/log-hypotheses.md.
+            - Add follow-up tasks with priorities.
+
+            Safety:
+            - Do not modify code. Only write the report.

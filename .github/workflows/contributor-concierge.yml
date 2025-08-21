@@ -1,0 +1,54 @@
+name: Claude - Contributor Concierge
+
+# ABOUT
+# - Posts a friendly, actionable welcome/guidance comment on a PR.
+# - Manual only; great for first-time contributors.
+#
+# CUSTOMIZATION
+# - Update tone and house style in the prompt.
+# - Add a checklist of "project setup" steps common in your repo.
+# - Restrict or remove gh pr comment if you only want a local report.
+
+on:
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: First-time contributor PR number
+        required: true
+      post_comment:
+        description: Post welcome comment (true/false)
+        default: "true"
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+  id-token: write
+
+jobs:
+  concierge:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Welcome and guide the contributor
+        uses: anthropics/claude-code-action@beta
+        env:
+          GH_TOKEN: ${{ github.token }}
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          mode: agent
+          allowed_tools: |
+            Write,
+            Bash(gh pr view:*),
+            Bash(gh pr comment:*)
+          override_prompt: |
+            You are a contributor concierge.
+
+            Task:
+            - Review PR #${{ inputs.pr_number }} context and files.
+            - Draft friendly guidance and a "one next change" suggestion.
+            - If ${{ inputs.post_comment }} == "true", post a welcome comment with the guidance using `gh pr comment`.
+
+            Safety:
+            - Do not modify code. Only post a comment when requested.

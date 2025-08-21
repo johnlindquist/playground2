@@ -1,0 +1,69 @@
+name: Claude - Design Doc Gatekeeper
+
+# ABOUT
+# - Reviews RFC/design docs against a template (Problem, Goals, Non-Goals, Options, Tradeoffs, Decision, Rollout, Risks, Metrics).
+# - Manual run only. Writes a consolidated report to reports/design-doc-review.md and can optionally comment on an issue.
+#
+# HOW TO CUSTOMIZE
+# - Change inputs.rfc_glob to target your RFC folder structure.
+# - Add/remove sections in the template list within override_prompt.
+# - Tighten allowed_tools if you do not want any GitHub comments (remove gh issue comment).
+# - Set post_comment default to "true" if you want comments by default.
+#
+# SECRETS & PERMISSIONS
+# - Requires CLAUDE_CODE_OAUTH_TOKEN.
+# - issues: read permission is enough to read issue content; comment requires GH_TOKEN and gh CLI tool access.
+
+on:
+  workflow_dispatch:
+    inputs:
+      rfc_glob:
+        description: Glob of RFC docs to review (e.g. docs/rfcs/*.md)
+        required: false
+        default: "docs/rfcs/*.md"
+      issue_number:
+        description: Optional issue to comment on
+        required: false
+      post_comment:
+        description: Also post an issue comment (true/false)
+        required: false
+        default: "false"
+
+permissions:
+  contents: read
+  issues: read
+  id-token: write
+
+jobs:
+  design-doc-review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Analyze RFCs against template
+        uses: anthropics/claude-code-action@beta
+        env:
+          GH_TOKEN: ${{ github.token }}
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          mode: agent
+          allowed_tools: |
+            Write,
+            Bash(ls -la:*),
+            Bash(mkdir -p reports),
+            Bash(gh issue comment:*)
+          override_prompt: |
+            You are a design-doc reviewer.
+
+            Task:
+            - Read all markdown files matching "${{ inputs.rfc_glob }}" if they exist.
+            - Evaluate each RFC against a template: Problem, Goals/Non-Goals, Options, Tradeoffs, Decision, Rollout, Risks, Metrics.
+            - Produce a single report at reports/design-doc-review.md with a section per RFC:
+              - Missing sections checklist
+              - Specific, constructive suggestions
+              - Questions to resolve before implementation
+
+            Safety:
+            - Only write to reports/design-doc-review.md.
+            - If an issue number was provided AND ${{ inputs.post_comment }} == "true", add an issue comment linking to the report using:
+              `gh issue comment ${{ inputs.issue_number }} --body "📄 Design doc review generated: reports/design-doc-review.md"`.

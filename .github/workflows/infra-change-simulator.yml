@@ -1,0 +1,47 @@
+name: Claude - Infra Change Simulator
+
+# ABOUT
+# - Drafts infra plan/diff guidance and cost estimation steps without hitting cloud APIs.
+# - Manual only; writes a report.
+#
+# CUSTOMIZATION
+# - Set iac_dir to your Terraform/CDK/Pulumi/etc. folder.
+# - Add references to your state backend/remote env in the prompt for clarity.
+# - If you want execution, explicitly add tools (terraform init/plan) and accept risk.
+
+on:
+  workflow_dispatch:
+    inputs:
+      iac_dir:
+        description: IaC directory (terraform/cdk/etc.)
+        default: infra
+        required: true
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  infra-sim:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Draft plan/diff and cost estimate guidance
+        uses: anthropics/claude-code-action@beta
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          mode: agent
+          allowed_tools: |
+            Write,
+            Bash(mkdir -p reports)
+          override_prompt: |
+            You are an infra change simulator.
+
+            Task:
+            - Review IaC under "${{ inputs.iac_dir }}" and generate a report at reports/infra-plan.md.
+            - Include guidance for running `terraform plan`/`cdk diff` and estimating costs.
+            - Summarize likely drift and a mitigation checklist.
+
+            Safety:
+            - Do not run cloud commands. Only write the report.

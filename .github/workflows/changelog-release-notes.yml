@@ -1,0 +1,52 @@
+name: Claude - Changelog & Release Notes Author
+
+# ABOUT
+# - Generates release notes and updates CHANGELOG.md from git history between two refs.
+# - Manual only; conservative writes.
+#
+# CUSTOMIZATION
+# - Adjust formatting, sections, and link styles in the prompt.
+# - Include commit classification rules (feat/fix/docs/etc.) to power nicer summaries.
+# - If you don’t want CHANGELOG.md updated, remove that instruction.
+
+on:
+  workflow_dispatch:
+    inputs:
+      since_ref:
+        description: Git ref to start from (e.g., v1.2.3)
+        required: true
+      until_ref:
+        description: Optional end ref (default HEAD)
+        required: false
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  changelog:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate changelog with proofs
+        uses: anthropics/claude-code-action@beta
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          mode: agent
+          allowed_tools: |
+            Write,
+            Bash(git log:*),
+            Bash(mkdir -p reports)
+          override_prompt: |
+            You are a release notes author.
+
+            Task:
+            - Use `git log --pretty=medium` between "${{ inputs.since_ref }}" and "${{ inputs.until_ref || 'HEAD' }}" to gather commits and PR references.
+            - Draft release notes at reports/release-notes.md with Highlights, Breaking Changes, and links to PRs/issues when possible.
+            - Update or create CHANGELOG.md by appending a new section with the same content.
+
+            Safety:
+            - Only write to reports/release-notes.md and CHANGELOG.md.

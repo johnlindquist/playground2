@@ -1,0 +1,51 @@
+name: Claude - Selective CI (Monorepo Brain)
+
+# ABOUT
+# - Creates a helper script to compute affected packages/jobs and a report explaining how to integrate it.
+# - Manual only.
+#
+# CUSTOMIZATION
+# - Adjust base_ref to your mainline branch.
+# - Edit the prompt to match your monorepo layout (package.json workspaces, go modules, cargo, etc.).
+# - If you already use a tool (Nx, Turborepo, Bazel), ask to generate integration steps for that tool.
+
+on:
+  workflow_dispatch:
+    inputs:
+      base_ref:
+        description: Base ref to compare against
+        default: origin/main
+        required: true
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  selective-ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate affected-packages script and audit
+        uses: anthropics/claude-code-action@beta
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          mode: agent
+          allowed_tools: |
+            Write,
+            Bash(git diff:*),
+            Bash(mkdir -p scripts),
+            Bash(mkdir -p reports)
+          override_prompt: |
+            You are a monorepo CI optimizer.
+
+            Task:
+            - Compute changed paths vs "${{ inputs.base_ref }}".
+            - Generate a helper script at scripts/affected.sh that prints the minimal set of packages/jobs to run.
+            - Write reports/selective-ci-audit.md describing skipped/affected areas and how to integrate the script in workflows.
+
+            Safety:
+            - Only add files under scripts/ and reports/.

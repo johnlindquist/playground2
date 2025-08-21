@@ -1,9 +1,9 @@
 name: Generate Poem with Claude
 
 on:
-  schedule:
-    # Run every 15 minutes
-    - cron: "*/15 * * * *"
+  # schedule:
+  # Run every 15 minutes
+  # - cron: "*/15 * * * *"
   workflow_dispatch: # Allow manual trigger for testing
 
 # Permissions must be set to allow writing back to the repository.

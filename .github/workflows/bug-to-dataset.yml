@@ -1,0 +1,50 @@
+name: Claude - Bug → Dataset Creator
+
+# ABOUT
+# - Turns a bug report into anonymized fixtures and a failing test scaffold for reproduction.
+# - Manual only; writes under fixtures/ and tests/failing/.
+#
+# CUSTOMIZATION
+# - Add your project’s test harness and directory conventions in the prompt.
+# - Include data anonymization rules if handling sensitive info.
+# - Ask for a minimal reproduction script in addition to tests if useful.
+
+on:
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: Issue describing bug and steps
+        required: true
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  bug-to-dataset:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Synthesize fixtures and failing test scaffold
+        uses: anthropics/claude-code-action@beta
+        env:
+          GH_TOKEN: ${{ github.token }}
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          mode: agent
+          allowed_tools: |
+            Write,
+            Bash(gh issue view:*),
+            Bash(mkdir -p fixtures),
+            Bash(mkdir -p tests/failing)
+          override_prompt: |
+            You are a bug-to-dataset assistant.
+
+            Task:
+            - Read issue #${{ inputs.issue_number }} for repro steps/inputs.
+            - Create anonymized fixtures under fixtures/ and a failing test scaffold under tests/failing/ that uses those fixtures.
+            - Include clear TODOs and assumptions if the stack is unclear.
+
+            Safety:
+            - Only add files under fixtures/ and tests/failing/.

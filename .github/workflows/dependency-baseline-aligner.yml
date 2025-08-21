@@ -1,0 +1,45 @@
+name: Claude - Dependency Baseline Aligner
+
+# ABOUT
+# - Reads a baseline dependency policy doc and outputs a staged upgrade plan with risk scoring.
+# - Manual only; planning report only.
+#
+# CUSTOMIZATION
+# - Add your ecosystem specifics (npm/pip/etc.) and CI gates to the prompt.
+# - Ask for a batching strategy to minimize disruption.
+# - If you want auto-PRs, explicitly add allowed_tools and branch creation steps (not included by default).
+
+on:
+  workflow_dispatch:
+    inputs:
+      baseline_doc:
+        description: Path to baseline policy doc
+        required: true
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  deps-align:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Plan upgrades to meet baseline
+        uses: anthropics/claude-code-action@beta
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          mode: agent
+          allowed_tools: |
+            Write,
+            Bash(mkdir -p reports)
+          override_prompt: |
+            You are a dependency baseline aligner.
+
+            Task:
+            - Read the baseline at "${{ inputs.baseline_doc }}".
+            - Analyze current manifests and produce reports/dependency-baseline-plan.md with staged upgrade steps and risk scoring.
+
+            Safety:
+            - Planning only; do not modify manifests.

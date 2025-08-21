@@ -1,0 +1,48 @@
+name: Claude - Cross-Platform Repro Bot (Playwright/Electron)
+
+# ABOUT
+# - Creates a Playwright repro scaffold with trace/video to reproduce issues consistently across OSes.
+# - Manual only; adds files under repro/playwright/ and reports/.
+#
+# CUSTOMIZATION
+# - Adapt the scenario_desc to be more specific (URLs, user flows, data).
+# - Swap Playwright for your UI framework/tool if needed by editing the prompt.
+# - Expand allowed_tools if you want to auto-install deps (not recommended by default).
+
+on:
+  workflow_dispatch:
+    inputs:
+      scenario_desc:
+        description: Short description of repro scenario
+        required: true
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  repro-scaffold:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generate cross-platform repro scaffold
+        uses: anthropics/claude-code-action@beta
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          mode: agent
+          allowed_tools: |
+            Write,
+            Bash(mkdir -p repro/playwright),
+            Bash(mkdir -p reports)
+          override_prompt: |
+            You are a cross-platform repro assistant.
+
+            Task:
+            - Create a Playwright-based repro scaffold under repro/playwright/ with a README explaining how to run on macOS/Windows/Linux.
+            - Base the scenario on: "${{ inputs.scenario_desc }}".
+            - Include a script that records a trace/video when reproducing the issue.
+            - Write a short report at reports/repro-instructions.md with precise steps and expected artifacts.
+
+            Safety:
+            - Only write in repro/playwright/ and reports/.

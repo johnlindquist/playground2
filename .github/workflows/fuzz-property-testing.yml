@@ -1,0 +1,51 @@
+name: Claude - Fuzz/Property Testing on Hot Paths
+
+# ABOUT
+# - Suggests property-based testing scaffolds and invariants for target code paths.
+# - Manual only; writes tests under tests/property/ and a plan report.
+#
+# CUSTOMIZATION
+# - Provide coverage_path if you have a coverage artifact to prioritize hotspots.
+# - Change target_dirs to your main source directory.
+# - Swap the test framework scaffolding to your language ecosystem in the prompt.
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_dirs:
+        description: Comma-separated list of directories to target
+        required: false
+        default: "src"
+      coverage_path:
+        description: Optional path to coverage report to prioritize (e.g., coverage/coverage.json)
+        required: false
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  fuzzing-scaffold:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Propose property-based tests and fuzz scaffolding
+        uses: anthropics/claude-code-action@beta
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          mode: agent
+          allowed_tools: |
+            Write,
+            Bash(mkdir -p tests/property),
+            Bash(mkdir -p reports)
+          override_prompt: |
+            You are a testing strategist.
+
+            Task:
+            - Using any available coverage signal at "${{ inputs.coverage_path }}" (if present), identify candidate functions/paths under "${{ inputs.target_dirs }}".
+            - Generate property-based test scaffolding under tests/property/ with clear TODOs.
+            - Produce a report at reports/property-testing-plan.md with proposed invariants, generators, and example counterexamples to seek.
+
+            Safety:
+            - Only add files under tests/property/ and reports/.

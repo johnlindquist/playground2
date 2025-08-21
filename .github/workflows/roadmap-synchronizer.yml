@@ -1,0 +1,50 @@
+name: Claude - Roadmap Synchronizer
+
+# ABOUT
+# - Reads milestones/issues/PRs and proposes label/milestone updates + a weekly-style digest.
+# - Manual only; does not mutate state.
+#
+# CUSTOMIZATION
+# - Set milestone_title to narrow scope.
+# - Ask for label conventions and milestone switching rules in the prompt.
+# - If you want it to actually change labels/milestones, explicitly add gh mutation tools (not recommended by default).
+
+on:
+  workflow_dispatch:
+    inputs:
+      milestone_title:
+        description: Optional milestone to focus on
+        required: false
+
+permissions:
+  contents: read
+  issues: write
+  id-token: write
+
+jobs:
+  roadmap-sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Propose milestone/label updates and weekly digest
+        uses: anthropics/claude-code-action@beta
+        env:
+          GH_TOKEN: ${{ github.token }}
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          mode: agent
+          allowed_tools: |
+            Write,
+            Bash(gh api:*),
+            Bash(mkdir -p reports)
+          override_prompt: |
+            You are a roadmap synchronizer.
+
+            Task:
+            - Using `gh api`, fetch milestones, issues, and PRs. If a milestone title was provided ("${{ inputs.milestone_title }}"), focus on it.
+            - Propose label/milestone changes in a report at reports/roadmap-sync.md.
+            - Generate a weekly-style digest with progress summaries and blockers.
+
+            Safety:
+            - Do not mutate state. Only write the report (no changes pushed).

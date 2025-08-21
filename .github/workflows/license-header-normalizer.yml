@@ -1,0 +1,63 @@
+name: Claude - License & Header Normalizer
+
+# ABOUT
+# - Audits files missing a required header, optionally creates a branch adding headers, and opens a PR.
+# - Manual only.
+#
+# CUSTOMIZATION
+# - Provide header_text with your approved notice; keep it short and project-appropriate.
+# - Carefully review PRs to avoid churn; the prompt asks to respect shebangs and comments.
+# - Set create_branch default to true if you intend to run this often.
+
+on:
+  workflow_dispatch:
+    inputs:
+      header_text:
+        description: License/header text to enforce (short)
+        required: true
+      file_glob:
+        description: Files to check (e.g., src/**/*.{ts,js,py,go})
+        required: true
+      create_branch:
+        description: Create a PR with added headers (true/false)
+        default: "false"
+
+permissions:
+  contents: write
+  pull-requests: write
+  id-token: write
+
+jobs:
+  header-normalize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect and normalize headers
+        uses: anthropics/claude-code-action@beta
+        env:
+          GH_TOKEN: ${{ github.token }}
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          mode: agent
+          allowed_tools: |
+            Write,
+            Bash(rg:*),
+            Bash(git config:*),
+            Bash(git checkout -b:*),
+            Bash(git add:*),
+            Bash(git commit:*),
+            Bash(git push:*),
+            Bash(gh pr create:*)
+          override_prompt: |
+            You are a license/header normalizer.
+
+            Task:
+            - Search for files matching "${{ inputs.file_glob }}" missing the required header.
+            - Write a report at reports/header-audit.md listing affected files.
+            - If ${{ inputs.create_branch }} == "true", create branch "chore/add-headers", add the header text to each missing file in a non-destructive way (respect shebangs, comments), commit, and open a PR.
+
+            Safety:
+            - Avoid churn on large files; keep changes minimal.

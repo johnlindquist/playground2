@@ -1,0 +1,57 @@
+name: Claude - Flaky Test Hunter-Killer
+
+# ABOUT
+# - Re-runs a single test N times to gauge flakiness and writes logs + a summary.
+# - Manual run only; does not mark tests as skipped automatically.
+#
+# CUSTOMIZATION
+# - Set test_command to exactly how you run an individual test in your project.
+# - Adjust reruns to increase confidence.
+# - Extend summary to include links to a tracking issue template.
+
+on:
+  workflow_dispatch:
+    inputs:
+      test_command:
+        description: Command to run a single test (e.g., npm test -- -t "My test")
+        required: true
+      reruns:
+        description: Number of reruns to prove flakiness
+        default: "10"
+        required: true
+      quarantine_label:
+        description: Label to apply on quarantine (documentation only)
+        default: flaky-test
+        required: true
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  flaky-hunter:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Prove flakiness and quarantine
+        uses: anthropics/claude-code-action@beta
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          mode: agent
+          allowed_tools: |
+            Write,
+            Bash(mkdir -p reports),
+            Bash(echo:*),
+            Bash(sh -c:*),
+            Bash(bash -lc:*)
+          override_prompt: |
+            You are a reliability assistant.
+
+            Task:
+            - Run the provided test command ${{ inputs.reruns }} times to detect flakiness. Use a loop like `for i in ...; do <cmd> || true; done` and capture pass/fail counts.
+            - Record outputs to reports/flaky-test-log.txt and summarize stability in reports/flaky-test-summary.md.
+            - If failures occur, write a quarantine plan to reports/flaky-quarantine-plan.md describing how to temporarily skip/quarantine the test and next steps to deflake.
+
+            Safety:
+            - Do not modify source code. Only write under reports/.

@@ -1,0 +1,47 @@
+name: Claude - Cache Strategy Optimizer
+
+# ABOUT
+# - Reviews your GitHub Actions workflows and suggests better cache keys/placement.
+# - Manual only; writes a recommendations report.
+#
+# CUSTOMIZATION
+# - Point workflow_glob to a subset if desired.
+# - Ask for before/after timing hypotheses in the prompt.
+# - Include examples of cache key composition (runner, lockfile hash, OS, node version, etc.).
+
+on:
+  workflow_dispatch:
+    inputs:
+      workflow_glob:
+        description: Workflow files to analyze
+        default: ".github/workflows/*.yml"
+        required: true
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  cache-optimizer:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Propose cache keys and improvements
+        uses: anthropics/claude-code-action@beta
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          mode: agent
+          allowed_tools: |
+            Write,
+            Bash(mkdir -p reports)
+          override_prompt: |
+            You are a CI cache optimizer.
+
+            Task:
+            - Analyze workflows matching "${{ inputs.workflow_glob }}".
+            - Propose improved cache strategies and keys in reports/cache-optimization.md.
+            - Include diff-style suggestions for `actions/cache` usage.
+
+            Safety:
+            - Do not modify existing workflows; only write the report.
