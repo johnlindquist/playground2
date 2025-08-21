@@ -48,3 +48,10 @@ jobs:
 
             Safety:
             - Only add files under tests/plans and tests/stubs.
+
+      - name: Upload reports artifact
+        if: ${{ hashFiles('reports/**') != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: claude-reports
+          path: reports/**

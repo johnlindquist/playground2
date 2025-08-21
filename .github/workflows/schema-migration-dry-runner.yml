@@ -45,3 +45,10 @@ jobs:
 
             Safety:
             - Do not run the script now. Only generate it and the report.
+
+      - name: Upload reports artifact
+        if: ${{ hashFiles('reports/**') != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: claude-reports
+          path: reports/**

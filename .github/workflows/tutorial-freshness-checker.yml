@@ -45,3 +45,10 @@ jobs:
 
             Safety:
             - Read-only analysis. Only write the report.
+
+      - name: Upload reports artifact
+        if: ${{ hashFiles('reports/**') != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: claude-reports
+          path: reports/**

@@ -74,3 +74,10 @@ jobs:
             Safety:
             - Never rewrite or push to the original branch.
             - If rebase conflicts arise, stop and write instructions to resolve in the PR body.
+
+      - name: Upload reports artifact
+        if: ${{ hashFiles('reports/**') != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: claude-reports
+          path: reports/**

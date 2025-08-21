@@ -65,5 +65,12 @@ jobs:
 
             Safety:
             - Only write to reports/design-doc-review.md.
-            - If an issue number was provided AND ${{ inputs.post_comment }} == "true", add an issue comment linking to the report using:
-              `gh issue comment ${{ inputs.issue_number }} --body "📄 Design doc review generated: reports/design-doc-review.md"`.
+            - If an issue number was provided AND ${{ inputs.post_comment }} == "true", add an issue comment noting the report is attached as artifact 'claude-reports' (reports/design-doc-review.md):
+              `gh issue comment ${{ inputs.issue_number }} --body "📄 Design doc review is attached as artifact 'claude-reports' (reports/design-doc-review.md)"`.
+
+      - name: Upload reports artifact
+        if: ${{ hashFiles('reports/**') != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: claude-reports
+          path: reports/**

@@ -48,7 +48,14 @@ jobs:
             Task:
             - Read issue #${{ inputs.issue_number }} and search for similar issues using `gh issue list --search`.
             - Create a report at reports/issue-${{ inputs.issue_number }}-dedupe.md listing 3–10 likely duplicates with links and short rationales.
-            - If ${{ inputs.post_comment }} == "true", post a comment with the top 3 candidates and a polite note.
+            - If ${{ inputs.post_comment }} == "true", post a comment with the top 3 candidates and a polite note; also mention the full report is attached as artifact 'claude-reports'.
 
             Safety:
             - Read-only otherwise. Only write the report and optional comment.
+
+      - name: Upload reports artifact
+        if: ${{ hashFiles('reports/**') != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: claude-reports
+          path: reports/**

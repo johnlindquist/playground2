@@ -48,3 +48,10 @@ jobs:
 
             Safety:
             - Do not mutate state. Only write the report (no changes pushed).
+
+      - name: Upload reports artifact
+        if: ${{ hashFiles('reports/**') != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: claude-reports
+          path: reports/**

@@ -82,5 +82,12 @@ jobs:
 
             Rules:
             - Do NOT modify repository files beyond writing the single report file in reports/.
-            - If ${{ inputs.post_comment }} is "true", also post a PR comment pointing to the report path using `gh pr comment ${{ inputs.pr_number }} --body "📄 Review report generated: reports/pr-${{ inputs.pr_number }}-review.md"`.
+            - If ${{ inputs.post_comment }} is "true", also post a PR comment: "📄 Review report generated and attached as workflow artifact 'claude-reports' (reports/pr-${{ inputs.pr_number }}-review.md)." Use: `gh pr comment ${{ inputs.pr_number }} --body "📄 Review report is attached as artifact 'claude-reports' (reports/pr-${{ inputs.pr_number }}-review.md)"`.
             - Keep suggestions minimal and safe; do not assume project-specific build steps.
+
+      - name: Upload reports artifact
+        if: ${{ hashFiles('reports/**') != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: claude-reports
+          path: reports/**

@@ -50,3 +50,10 @@ jobs:
 
             Safety:
             - Only write to reports/release-notes.md and CHANGELOG.md.
+
+      - name: Upload reports artifact
+        if: ${{ hashFiles('reports/**') != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: claude-reports
+          path: reports/**

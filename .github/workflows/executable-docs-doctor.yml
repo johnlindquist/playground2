@@ -47,3 +47,10 @@ jobs:
 
             Safety:
             - Do NOT run networked commands. Only generate outputs by reasoning, marking any assumptions.
+
+      - name: Upload reports artifact
+        if: ${{ hashFiles('reports/**') != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: claude-reports
+          path: reports/**

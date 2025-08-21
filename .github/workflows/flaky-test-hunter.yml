@@ -55,3 +55,10 @@ jobs:
 
             Safety:
             - Do not modify source code. Only write under reports/.
+
+      - name: Upload reports artifact
+        if: ${{ hashFiles('reports/**') != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: claude-reports
+          path: reports/**

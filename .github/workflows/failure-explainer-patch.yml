@@ -67,3 +67,10 @@ jobs:
 
             Safety:
             - Keep changes minimal. If unsure, add a TODO and prefer a smaller patch.
+
+      - name: Upload reports artifact
+        if: ${{ hashFiles('reports/**') != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: claude-reports
+          path: reports/**

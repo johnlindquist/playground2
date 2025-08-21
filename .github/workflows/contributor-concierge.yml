@@ -50,5 +50,12 @@ jobs:
             - Draft friendly guidance and a "one next change" suggestion.
             - If ${{ inputs.post_comment }} == "true", post a welcome comment with the guidance using `gh pr comment`.
 
+      - name: Upload reports artifact
+        if: ${{ hashFiles('reports/**') != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: claude-reports
+          path: reports/**
+
             Safety:
             - Do not modify code. Only post a comment when requested.
