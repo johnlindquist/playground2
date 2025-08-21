@@ -47,6 +47,10 @@ Review Claude action docs
 
 All workflows take simple inputs and write their outputs under predictable folders such as `reports/`, `tests/`, `scripts/`, or `tools/`.
 
+Artifacts
+- Most workflows also upload generated reports as a run artifact named `claude-reports` so you can download results without committing files.
+- If you prefer committing reports to the repo or opening a PR, see each workflow’s comments for how to expand `allowed_tools` and permissions safely.
+
 ## Safety Model
 
 - Manual triggers only. No schedules or automatic events configured.

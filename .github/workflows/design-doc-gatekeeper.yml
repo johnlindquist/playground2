@@ -12,7 +12,7 @@ name: Claude - Design Doc Gatekeeper
 #
 # SECRETS & PERMISSIONS
 # - Requires CLAUDE_CODE_OAUTH_TOKEN.
-# - issues: read permission is enough to read issue content; comment requires GH_TOKEN and gh CLI tool access.
+# - issues: write is required if posting an issue comment; GH_TOKEN is provided via env for gh CLI.
 
 on:
   workflow_dispatch:
@@ -31,7 +31,7 @@ on:
 
 permissions:
   contents: read
-  issues: read
+  issues: write
   id-token: write
 
 jobs:

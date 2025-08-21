@@ -11,7 +11,7 @@ name: Claude - Diff-Aware PR Reviewer
 # - CLAUDE_CODE_OAUTH_TOKEN: A long-lived Claude Code OAuth token (see docs/claude-code-action.md).
 #
 # PERMISSIONS EXPLAINED
-# - contents: read, pull-requests: read, issues: read enable reading repo/PR metadata.
+# - contents: read, pull-requests: write, issues: read enable reading repo/PR metadata and posting PR comments when enabled.
 # - id-token: write is required by the action runtime.
 # - actions: read lets Claude read CI results on PRs if you include that in additional_permissions.
 #
@@ -38,7 +38,7 @@ on:
 
 permissions:
   contents: read
-  pull-requests: read
+  pull-requests: write
   issues: read
   id-token: write
   actions: read
