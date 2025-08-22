@@ -35,7 +35,7 @@ jobs:
           mode: agent
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           # Explicitly grant Claude the tools to write a file and use git commands.
-          allowed_tools: "Write,Bash(git add:*),Bash(git commit:*),Bash(git push),Bash(git config:*)"
+          allowed_tools: "Write,Bash(git add:*),Bash(git commit:*),Bash(git push),Bash(git pull),Bash(git config:*)"
           # Use 'override_prompt' for direct, automated instructions.
           override_prompt: |
             You are a creative poet bot. Your task is to generate a unique poem and commit it to this repository.
@@ -72,6 +72,7 @@ jobs:
             Finally, commit the new poem file to the repository:
             1. Stage the new file using `git add poems/`.
             2. Commit the file with the message "feat: add poem '[Poem Title]'".
-            3. Push the commit.
+            3. Pull the latest changes using `git pull --rebase` to ensure you have the latest commits.
+            4. Push the commit using `git push`.
 
             Execute these steps precisely.
